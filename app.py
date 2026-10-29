@@ -15,7 +15,7 @@ from schemas import (
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI', 'sqlite:///app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.json.compact = False
+# app.json.compact = False
 
 migrate = Migrate(app, db)
 
@@ -80,8 +80,8 @@ def get_workout(id):
 
 @app.route('/workouts', methods=['POST'])
 def create_workout():
-    data = workout_schema.load(request.get_json(silent=True) or {})
-    workout = Workout(**data)
+    data = (workout_schema.load(request.get_json(silent=True) or {}))
+    workout = Workout(**data) # type:ignore
     db.session.add(workout)
     db.session.commit()
     return make_response(workout_schema.dump(workout), 201)
@@ -114,7 +114,7 @@ def get_exercise(id):
 @app.route('/exercises', methods=['POST'])
 def create_exercise():
     data = exercise_schema.load(request.get_json(silent=True) or {})
-    exercise = Exercise(**data)
+    exercise = Exercise(**data) # type:ignore
     db.session.add(exercise)
     db.session.commit()
     return make_response(exercise_schema.dump(exercise), 201)
@@ -140,7 +140,7 @@ def add_exercise_to_workout(workout_id, exercise_id):
         return error(f'Exercise {exercise_id} not found', 404)
 
     data = workout_exercise_schema.load(request.get_json(silent=True) or {})
-    workout_exercise = WorkoutExercise(workout=workout, exercise=exercise, **data)
+    workout_exercise = WorkoutExercise(workout=workout, exercise=exercise, **data) # type:ignore
     db.session.add(workout_exercise)
     db.session.commit()
     return make_response(workout_exercise_schema.dump(workout_exercise), 201)
